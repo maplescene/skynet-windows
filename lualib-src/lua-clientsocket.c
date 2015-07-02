@@ -19,8 +19,18 @@
 
 #define CACHE_SIZE 0x1000	
 
+#ifdef _MSC_VER
+static int s_count = 0;
+#endif
+
 static int
 lconnect(lua_State *L) {
+#ifdef _MSC_VER
+	if(s_count++ == 0) {
+	    WSADATA wsadata;
+		WSAStartup(MAKEWORD(2, 2), &wsadata);
+	}
+#endif
 	const char * addr = luaL_checkstring(L, 1);
 	int port = luaL_checkinteger(L, 2);
 	int fd = socket(AF_INET,SOCK_STREAM,0);
@@ -36,9 +46,13 @@ lconnect(lua_State *L) {
 		return luaL_error(L, "Connect %s %d failed", addr, port);
 	}
 
+#ifdef _MSC_VER
+	int ul = 1;
+	ioctlsocket(fd, FIONBIO, &ul);
+#else
 	int flag = fcntl(fd, F_GETFL, 0);
 	fcntl(fd, F_SETFL, flag | O_NONBLOCK);
-
+#endif
 	lua_pushinteger(L, fd);
 
 	return 1;
@@ -46,6 +60,11 @@ lconnect(lua_State *L) {
 
 static int
 lclose(lua_State *L) {
+#ifdef _MSC_VER
+	if(--s_count == 0)
+		WSACleanup();
+#endif
+
 	int fd = luaL_checkinteger(L, 1);
 	close(fd);
 
@@ -108,7 +127,11 @@ lrecv(lua_State *L) {
 		return 1;
 	}
 	if (r < 0) {
+#ifdef _MSC_VER
+		if (GetLastError() == WSAEWOULDBLOCK) {
+#else
 		if (errno == EAGAIN || errno == EINTR) {
+#endif
 			return 0;
 		}
 		luaL_error(L, "socket error: %s", strerror(errno));

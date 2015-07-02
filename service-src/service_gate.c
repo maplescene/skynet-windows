@@ -1,5 +1,6 @@
 #include "skynet.h"
 #include "skynet_socket.h"
+#include <unistd.h>
 #include "databuffer.h"
 #include "hashid.h"
 
@@ -88,7 +89,12 @@ _forward_agent(struct gate * g, int fd, uint32_t agentaddr, uint32_t clientaddr)
 static void
 _ctrl(struct gate * g, const void * msg, int sz) {
 	struct skynet_context * ctx = g->ctx;
+#ifdef _MSC_VER
+	assert(sz <= 1024);
+	char tmp[1024+1];
+#else
 	char tmp[sz+1];
+#endif
 	memcpy(tmp, msg, sz);
 	tmp[sz] = '\0';
 	char * command = tmp;
@@ -278,7 +284,7 @@ _cb(struct skynet_context * ctx, void * ud, int type, int session, uint32_t sour
 			break;
 		}
 		// The last 4 bytes in msg are the id of socket, write following bytes to it
-		const uint8_t * idbuf = msg + sz - 4;
+		const uint8_t * idbuf = (const uint8_t *)msg + sz - 4;
 		uint32_t uid = idbuf[0] | idbuf[1] << 8 | idbuf[2] << 16 | idbuf[3] << 24;
 		int id = hashid_lookup(&g->hash, uid);
 		if (id>=0) {
@@ -335,8 +341,14 @@ gate_init(struct gate *g , struct skynet_context * ctx, char * parm) {
 	int max = 0;
 	int buffer = 0;
 	int sz = strlen(parm)+1;
+#ifdef _MSC_VER
+	assert(sz <= 1024);
+	char watchdog[1024];
+	char binding[1024];
+#else
 	char watchdog[sz];
 	char binding[sz];
+#endif
 	int client_tag = 0;
 	char header;
 	int n = sscanf(parm, "%c %s %s %d %d %d",&header,watchdog, binding,&client_tag , &max,&buffer);

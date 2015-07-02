@@ -8,6 +8,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#include <unistd.h>
+
 #define OP_REPLY 1
 #define OP_MSG	1000
 #define OP_UPDATE 2001

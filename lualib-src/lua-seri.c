@@ -11,6 +11,8 @@
 #include <assert.h>
 #include <string.h>
 
+#include <unistd.h>
+
 #define TYPE_NIL 0
 #define TYPE_BOOLEAN 1
 // hibits 0 false 1 true

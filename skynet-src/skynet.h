@@ -2,6 +2,7 @@
 #define SKYNET_H
 
 #include "skynet_malloc.h"
+#include "skynet_compat.h"
 
 #include <stddef.h>
 #include <stdint.h>
