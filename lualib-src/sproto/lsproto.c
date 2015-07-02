@@ -174,6 +174,18 @@ encode(const struct sproto_arg *args) {
 			return 8;
 		}
 	}
+	case SPROTO_TREAL: {
+		lua_Number v;
+		if (!lua_isnumber(L, -1)) {
+			return luaL_error(L, ".%s[%d] is not an number (Is a %s)", 
+				args->tagname, args->index, lua_typename(L, lua_type(L, -1)));
+		} else {
+			v = lua_tonumber(L, -1);
+		}
+		lua_pop(L,1);
+		*(lua_Number *)args->value = (lua_Number)v;
+		return 8;
+	}
 	case SPROTO_TBOOLEAN: {
 		int v = lua_toboolean(L, -1);
 		if (!lua_isboolean(L,-1)) {
@@ -319,6 +331,11 @@ decode(const struct sproto_arg *args) {
 		// notice: in lua 5.2, 52bit integer support (not 64)
 		lua_Integer v = *(uint64_t*)args->value;
 		lua_pushinteger(L, v);
+		break;
+	}
+	case SPROTO_TREAL: {
+		lua_Number v = *(lua_Number*)args->value;
+		lua_pushnumber(L, v);
 		break;
 	}
 	case SPROTO_TBOOLEAN: {
@@ -588,6 +605,9 @@ encode_default(const struct sproto_arg *args) {
 		case SPROTO_TINTEGER:
 			lua_pushinteger(L, 0);
 			break;
+		case SPROTO_TREAL:
+			lua_pushnumber(L, 0);
+			break;
 		case SPROTO_TBOOLEAN:
 			lua_pushboolean(L, 0);
 			break;
@@ -598,6 +618,22 @@ encode_default(const struct sproto_arg *args) {
 			lua_createtable(L, 0, 1);
 			lua_pushstring(L, sproto_name(args->subtype));
 			lua_setfield(L, -2, "__type");
+			char dummy[64];
+			int ret = sproto_encode(args->subtype, dummy, sizeof(dummy), encode_default, L);
+			if (ret<0) {
+				// try again
+				int sz = sizeof(dummy) * 2;
+				void * tmp = lua_newuserdata(L, sz);
+				lua_insert(L, -2);
+				for (;;) {
+					ret = sproto_encode(args->subtype, tmp, sz, encode_default, L);
+					if (ret >= 0)
+						break;
+					sz *= 2;
+					tmp = lua_newuserdata(L, sz);
+					lua_replace(L, -3);
+				}
+			}
 			break;
 		}
 	}

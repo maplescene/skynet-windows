@@ -465,6 +465,7 @@ sproto_dump(struct sproto *s) {
 	int i,j;
 	static const char * buildin[] = {
 		"integer",
+		"real",
 		"boolean",
 		"string",
 	};
@@ -876,6 +877,7 @@ sproto_encode(const struct sproto_type *st, void * buffer, int size, sproto_call
 			args.index = 0;
 			switch(type) {
 			case SPROTO_TINTEGER:
+			case SPROTO_TREAL:
 			case SPROTO_TBOOLEAN: {
 				union {
 					uint64_t u64;
@@ -1099,7 +1101,8 @@ sproto_decode(const struct sproto_type *st, const void * data, int size, sproto_
 				}
 			} else {
 				switch (f->type) {
-				case SPROTO_TINTEGER: {
+				case SPROTO_TINTEGER:
+				case SPROTO_TREAL: {
 					uint32_t sz = todword(currentdata);
 					if (sz == sizeof(uint32_t)) {
 						uint64_t v = expand64(todword(currentdata + SIZEOF_LENGTH));
@@ -1131,7 +1134,7 @@ sproto_decode(const struct sproto_type *st, const void * data, int size, sproto_
 					return -1;
 				}
 			}
-		} else if (f->type != SPROTO_TINTEGER && f->type != SPROTO_TBOOLEAN) {
+		} else if (f->type != SPROTO_TINTEGER && f->type != SPROTO_TREAL && f->type != SPROTO_TBOOLEAN) {
 			return -1;
 		} else {
 			uint64_t v = value;
