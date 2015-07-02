@@ -1,5 +1,16 @@
 ## Build
 
+For windows, open build/vs2013/skynet.sln and build all
+You can use vs ide to debugging skynet
+
+```
+## Difference between offical skynet
+1.sproto support real(double) field type
+2.used event-select to simulate epoll
+3.use socket api to simulate pipe()
+4.hack read fd(0) for console input
+```
+
 For linux, install autoconf first for jemalloc
 
 ```
