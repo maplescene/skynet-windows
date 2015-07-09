@@ -13,7 +13,8 @@ struct sproto_type;
 #define SPROTO_TREAL 1
 #define SPROTO_TBOOLEAN 2
 #define SPROTO_TSTRING 3
-#define SPROTO_TSTRUCT 4
+#define SPROTO_TVARIANT 4
+#define SPROTO_TSTRUCT 5
 
 struct sproto * sproto_create(const void * proto, size_t sz);
 void sproto_release(struct sproto *);

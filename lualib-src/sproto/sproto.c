@@ -905,6 +905,7 @@ sproto_encode(const struct sproto_type *st, void * buffer, int size, sproto_call
 				break;
 			}
 			case SPROTO_TSTRUCT:
+			case SPROTO_TVARIANT:
 			case SPROTO_TSTRING:
 				sz = encode_object(cb, &args, data, size);
 				break;
@@ -1032,6 +1033,7 @@ decode_array(sproto_callback cb, struct sproto_arg *args, uint8_t * stream) {
 		}
 		break;
 	case SPROTO_TSTRING:
+	case SPROTO_TVARIANT:
 	case SPROTO_TSTRUCT:
 		return decode_array_object(cb, args, stream, sz);
 	default:
@@ -1122,6 +1124,7 @@ sproto_decode(const struct sproto_type *st, const void * data, int size, sproto_
 					break;
 				}
 				case SPROTO_TSTRING:
+				case SPROTO_TVARIANT:
 				case SPROTO_TSTRUCT: {
 					uint32_t sz = todword(currentdata);
 					args.value = currentdata+SIZEOF_LENGTH;
