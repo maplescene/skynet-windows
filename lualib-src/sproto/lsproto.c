@@ -234,7 +234,7 @@ encode(const struct sproto_arg *args) {
 			char *buf = (char *)args->value;
 			*buf++ = SPROTO_TSTRING;
 			memcpy(buf, str, sz);
-			return sz + 1 + 1;	// The length of empty string is 1.
+			return sz + 1;	// The length of empty string is 1.
 		}
 		case LUA_TBOOLEAN: {
 			int sz = 2;
