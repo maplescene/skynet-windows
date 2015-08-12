@@ -1,6 +1,7 @@
 #include "skynet.h"
 #include "skynet_harbor.h"
 #include "skynet_socket.h"
+#include "skynet_handle.h"
 
 /*
 	harbor listen the PTYPE_HARBOR (in text)
@@ -323,9 +324,13 @@ forward_local_messsage(struct harbor *h, void *msg, int sz) {
 
 static void
 send_remote(struct skynet_context * ctx, int fd, const char * buffer, size_t sz, struct remote_message_header * cookie) {
-	uint32_t sz_header = sz+sizeof(*cookie);
+	size_t sz_header = sz+sizeof(*cookie);
+	if (sz_header > UINT32_MAX) {
+		skynet_error(ctx, "remote message from :%08x to :%08x is too large.", cookie->source, cookie->destination);
+		return;
+	}
 	uint8_t * sendbuf = skynet_malloc(sz_header+4);
-	to_bigendian(sendbuf, sz_header);
+	to_bigendian(sendbuf, (uint32_t)sz_header);
 	memcpy(sendbuf+4, buffer, sz);
 	header_to_message(cookie, sendbuf+4+sz);
 
@@ -662,6 +667,13 @@ mainloop(struct skynet_context * context, void * ud, int type, int session, uint
 		case SKYNET_SOCKET_TYPE_CONNECT:
 			// fd forward to this service
 			break;
+		case SKYNET_SOCKET_TYPE_WARNING: {
+			int id = harbor_id(h, message->id);
+			if (id) {
+				skynet_error(context, "message havn't send to Harbor (%d) reach %d K", id, message->ud);
+			}
+			break;
+		}
 		default:
 			skynet_error(context, "recv invalid socket message type %d", type);
 			break;
