@@ -5,6 +5,7 @@ EXPORTS
 	mallctl_int64
 	mallctl_opt
 	dump_c_mem
+	dump_mem_lua
 
 	socket_server_create
 	socket_server_release
