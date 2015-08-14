@@ -22,9 +22,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\posix\atomic.c">
-      <Filter>Source files\posix</Filter>
-    </ClCompile>
     <ClCompile Include="..\posix\dlfcn.c">
       <Filter>Source files\posix</Filter>
     </ClCompile>
@@ -34,11 +31,11 @@
     <ClCompile Include="..\posix\cpoll\cpoll.cpp">
       <Filter>Source files\posix\cpoll</Filter>
     </ClCompile>
+    <ClCompile Include="..\posix\atomic_lock.c">
+      <Filter>Source files\posix</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\posix\atomic.h">
-      <Filter>Source files\posix</Filter>
-    </ClInclude>
     <ClInclude Include="..\posix\dlfcn.h">
       <Filter>Source files\posix</Filter>
     </ClInclude>
@@ -71,6 +68,9 @@
     </ClInclude>
     <ClInclude Include="..\posix\cpoll\cpoll.h">
       <Filter>Source files\posix\cpoll</Filter>
+    </ClInclude>
+    <ClInclude Include="..\posix\atomic_lock.h">
+      <Filter>Source files\posix</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

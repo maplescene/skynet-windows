@@ -11,14 +11,14 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\posix\atomic.c" />
+    <ClCompile Include="..\posix\atomic_lock.c" />
     <ClCompile Include="..\posix\cpoll\cpoll.cpp" />
     <ClCompile Include="..\posix\dlfcn.c" />
     <ClCompile Include="..\posix\unistd.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\posix\arpa\inet.h" />
-    <ClInclude Include="..\posix\atomic.h" />
+    <ClInclude Include="..\posix\atomic_lock.h" />
     <ClInclude Include="..\posix\cpoll\cpoll.h" />
     <ClInclude Include="..\posix\dlfcn.h" />
     <ClInclude Include="..\posix\netinet\in.h" />
