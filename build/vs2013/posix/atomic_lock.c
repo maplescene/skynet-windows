@@ -1,4 +1,4 @@
-#include "atomic.h"
+#include "atomic_lock.h"
 
 __declspec(naked) int __sync_fetch_and_sub(int *p, int n) {
   //4013e0:	55                   	push   %ebp

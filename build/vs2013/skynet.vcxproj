@@ -111,6 +111,7 @@
     <ClCompile Include="..\..\skynet-src\socket_server.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\skynet-src\atomic.h" />
     <ClInclude Include="..\..\skynet-src\malloc_hook.h" />
     <ClInclude Include="..\..\skynet-src\rwlock.h" />
     <ClInclude Include="..\..\skynet-src\skynet.h" />
