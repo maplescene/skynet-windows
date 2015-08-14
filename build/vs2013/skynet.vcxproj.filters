@@ -129,6 +129,9 @@
     <ClInclude Include="..\..\skynet-src\atomic.h">
       <Filter>Source files\skynet-src</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\skynet-src\spinlock.h">
+      <Filter>Source files\skynet-src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="skynet.def">

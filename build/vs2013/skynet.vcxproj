@@ -134,6 +134,7 @@
     <ClInclude Include="..\..\skynet-src\socket_kqueue.h" />
     <ClInclude Include="..\..\skynet-src\socket_poll.h" />
     <ClInclude Include="..\..\skynet-src\socket_server.h" />
+    <ClInclude Include="..\..\skynet-src\spinlock.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="skynet.def" />
