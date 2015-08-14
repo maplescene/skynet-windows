@@ -9,6 +9,7 @@
 
 #include "rwlock.h"
 #include "skynet_malloc.h"
+#include "atomic.h"
 
 struct stm_object {
 	struct rwlock lock;
@@ -47,7 +48,7 @@ static void
 stm_releasecopy(struct stm_copy *copy) {
 	if (copy == NULL)
 		return;
-	if (__sync_sub_and_fetch(&copy->reference, 1) == 0) {
+	if (ATOM_DEC(&copy->reference) == 0) {
 		skynet_free(copy->msg);
 		skynet_free(copy);
 	}
@@ -72,7 +73,7 @@ stm_release(struct stm_object *obj) {
 static void
 stm_releasereader(struct stm_object *obj) {
 	rwlock_rlock(&obj->lock);
-	if (__sync_sub_and_fetch(&obj->reference,1) == 0) {
+	if (ATOM_DEC(&obj->reference) == 0) {
 		// last reader, no writer. so no need to unlock
 		assert(obj->copy == NULL);
 		skynet_free(obj);
@@ -84,7 +85,7 @@ stm_releasereader(struct stm_object *obj) {
 static void
 stm_grab(struct stm_object *obj) {
 	rwlock_rlock(&obj->lock);
-	int ref = __sync_fetch_and_add(&obj->reference,1);
+	int ref = ATOM_FINC(&obj->reference);
 	rwlock_runlock(&obj->lock);
 	assert(ref > 0);
 }
@@ -94,7 +95,7 @@ stm_copy(struct stm_object *obj) {
 	rwlock_rlock(&obj->lock);
 	struct stm_copy * ret = obj->copy;
 	if (ret) {
-		int ref = __sync_fetch_and_add(&ret->reference,1);
+		int ref = ATOM_FINC(&ret->reference);
 		assert(ref > 0);
 	}
 	rwlock_runlock(&obj->lock);
