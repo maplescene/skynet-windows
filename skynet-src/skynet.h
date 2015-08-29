@@ -2,7 +2,9 @@
 #define SKYNET_H
 
 #include "skynet_malloc.h"
+#ifdef _MSC_VER
 #include "skynet_compat.h"
+#endif
 
 #include <stddef.h>
 #include <stdint.h>
