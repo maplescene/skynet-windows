@@ -3,6 +3,7 @@
 #include "skynet_imp.h"
 #include "skynet_env.h"
 #include "skynet_server.h"
+#include "luashrtbl.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -112,6 +113,8 @@ main(int argc, char *argv[]) {
 #ifdef _MSC_VER
 	cpoll_startup();
 #endif
+
+	luaS_initshr();
 	skynet_globalinit();
 	skynet_env_init();
 
@@ -146,6 +149,7 @@ main(int argc, char *argv[]) {
 
 	skynet_start(&config);
 	skynet_globalexit();
+	luaS_exitshr();
 
 #ifdef _MSC_VER
 	cpoll_cleanup();
