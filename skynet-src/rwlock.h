@@ -3,6 +3,8 @@
 
 #ifndef USE_PTHREAD_LOCK
 
+#include <unistd.h>
+
 struct rwlock {
 	int write;
 	int read;
