@@ -446,12 +446,10 @@ function skynet.dispatch_unknown_response(unknown)
 	return prev
 end
 
-local tunpack = table.unpack
-
 function skynet.fork(func,...)
-	local args = { ... }
+	local args = table.pack(...)
 	local co = co_create(function()
-		func(tunpack(args))
+		func(table.unpack(args,1,args.n))
 	end)
 	table.insert(fork_queue, co)
 	return co
@@ -608,11 +606,15 @@ local function init_all()
 	end
 end
 
+local function ret(f, ...)
+	f()
+	return ...
+end
+
 local function init_template(start)
 	init_all()
 	init_func = {}
-	start()
-	init_all()
+	return ret(init_all, start())
 end
 
 function skynet.pcall(start)

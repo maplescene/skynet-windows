@@ -112,11 +112,13 @@ socket_message[5] = function(id, _, err)
 		skynet.error("socket: error on unknown", id, err)
 		return
 	end
-	if s.connected or s.connecting then
+	if s.connected then
 		skynet.error("socket: error on", id, err)
+	elseif s.connecting then
+		s.connecting = err
 	end
 	s.connected = false
-	driver.close(id)
+	driver.shutdown(id)
 
 	wakeup(s)
 end
@@ -179,11 +181,13 @@ local function connect(id, func)
 	}
 	socket_pool[id] = s
 	suspend(s)
+	local err = s.connecting
 	s.connecting = nil
 	if s.connected then
 		return id
 	else
 		socket_pool[id] = nil
+		return nil, err
 	end
 end
 
@@ -206,16 +210,20 @@ function socket.start(id, func)
 	return connect(id, func)
 end
 
-function socket.shutdown(id)
+local function close_fd(id, func)
 	local s = socket_pool[id]
 	if s then
 		if s.buffer then
 			driver.clear(s.buffer,buffer_pool)
 		end
 		if s.connected then
-			driver.close(id)
+			func(id)
 		end
 	end
+end
+
+function socket.shutdown(id)
+	close_fd(id, driver.shutdown)
 end
 
 function socket.close(id)
@@ -228,7 +236,7 @@ function socket.close(id)
 		-- notice: call socket.close in __gc should be carefully,
 		-- because skynet.wait never return in __gc, so driver.clear may not be called
 		if s.co then
-			-- reading this socket on another coroutine, so don't shutdown (clear the buffer) immediatel
+			-- reading this socket on another coroutine, so don't shutdown (clear the buffer) immediately
 			-- wait reading coroutine read the buffer.
 			assert(not s.closing)
 			s.closing = coroutine.running()
@@ -238,7 +246,7 @@ function socket.close(id)
 		end
 		s.connected = false
 	end
-	socket.shutdown(id)
+	close_fd(id)	-- clear the buffer (already close fd)
 	assert(s.lock_set == nil or next(s.lock_set) == nil)
 	socket_pool[id] = nil
 end
