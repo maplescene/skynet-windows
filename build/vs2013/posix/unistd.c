@@ -168,9 +168,9 @@ int read(int fd, void *buffer, size_t sz) {
 	//return -1;
 }
 
-void close(int fd) {
+int close(int fd) {
 	shutdown(fd, SD_BOTH);
-	closesocket(fd);
+	return closesocket(fd);
 }
 
 int daemon(int a, int b) {
