@@ -1,4 +1,7 @@
 ## 前言
+#### 本仓库skynet支持windows下运行，只支持visual studio 2013，请确认你的编译器已经打好SP4补丁
+#### 因为很重要，所以强调一遍，请给你的vs2013打上SP4补丁，否则会编译出错。
+
 ```
 此版本修改自官方版skynet，改动部分如下：
 1、sproto修改，添加了real（双精度浮点数double）的支持，以及variant类型（可以是real/int/string/bool）的支持
