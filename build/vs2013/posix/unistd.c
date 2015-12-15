@@ -87,7 +87,7 @@ int pipe(int fd[2]) {
 	for(;;) {
 		int port = 60000 + rand() % 1000;
 		sin.sin_port = htons(port);
-		if(bind(listen_fd, (struct sockaddr*)&sin, sizeof(sin)) != SOCKET_ERROR)
+		if(!bind(listen_fd, (struct sockaddr*)&sin, sizeof(sin)))
 			break;
 	}
 
